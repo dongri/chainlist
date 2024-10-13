@@ -3,18 +3,10 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import Chain from "../../components/chain";
-import { fetcher, populateChain } from "../../utils/fetch";
+import { generateChainData } from "../../utils/fetch";
 
 export async function getStaticProps() {
-  const chains = await fetcher("https://chainid.network/chains.json");
-  const chainTvls = await fetcher("https://api.llama.fi/chains");
-
-  const sortedChains = chains
-    .filter((c) => c.name !== "420coin") // same chainId as ronin
-    .map((chain) => populateChain(chain, chainTvls))
-    .sort((a, b) => {
-      return (b.tvl ?? 0) - (a.tvl ?? 0);
-    });
+  const sortedChains = await generateChainData();
 
   return {
     props: {
@@ -62,10 +54,10 @@ function Home({ chains }) {
   return (
     <>
       <Head>
-        <title>Chainlist</title>
+        <title>ChainList</title>
         <meta
           name="description"
-          content="Chainlist is a list of RPCs for EVM(Ethereum Virtual Machine) networks. Use the information to connect your wallets and Web3 middleware providers to the appropriate Chain ID and Network ID. Find the best RPC for both Mainnet and Testnet to connect to the correct chain"
+          content="ChainList is a list of RPCs for EVM(Ethereum Virtual Machine) networks. Use the information to connect your wallets and Web3 middleware providers to the appropriate Chain ID and Network ID. Find the best RPC for both Mainnet and Testnet to connect to the correct chain"
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
